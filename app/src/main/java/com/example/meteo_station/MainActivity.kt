@@ -44,10 +44,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        scanner = BleScanner(this)
-        scanner.onPacketReceived = ::onPacketReceived
+        //scanner = BleScanner(this)
+        //scanner.onPacketReceived = ::onPacketReceived
 
-        if (hasPermissions()) startScanning() else requestPermissions()
+        //if (hasPermissions()) startScanning() else requestPermissions()
     }
 
     override fun onDestroy() {
