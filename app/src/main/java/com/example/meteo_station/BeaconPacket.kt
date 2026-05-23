@@ -34,6 +34,10 @@ data class BeaconPacket(
     fun getVolatileCompound() : Int{
         return ByteBuffer.wrap(envRaw).order(ByteOrder.BIG_ENDIAN).getShort(11).toInt() and 0xFFFF
     }
+
+    fun getRainIntensity(): Byte?{
+        return envRaw?.get(13)
+    }
     // ── Debug ────────────────────────────────────────────────────────────────
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
