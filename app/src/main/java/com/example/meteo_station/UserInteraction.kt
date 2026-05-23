@@ -13,27 +13,24 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-@Preview(name = "da")
-fun MainComposer(){
-    var temperatureInput by remember {mutableStateOf(0)}
-    var preasureInput by remember { mutableStateOf(0) }
-    var uvIndexInput by remember { mutableStateOf(0) }
-    var co2Input by remember { mutableStateOf(0) }
-    var organicCoumpoundInput by remember { mutableStateOf(0) }
+fun MainComposer(viewModel: MeteoViewModel){
+    val packet = viewModel.lastPacket
+
+    val temperatureOutput     = packet?.getTemperature()?.toInt() ?: 0
+    val pressureOutput        = packet?.getPressure()?.toInt()    ?: 0
+    val uvIndexOutput         = packet?.getUVIndex()?.toInt()     ?: 0
+    val co2Output             = packet?.getCO2()                  ?: 0
+    val organicCompoundOutput = packet?.getVolatileCompound()     ?: 0
+    val rainIntensityOutput   = packet?.getRainIntensity()        ?: 0
 
     Column(
         modifier = Modifier
@@ -59,7 +56,7 @@ fun MainComposer(){
                 .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(20.dp))
                 .background(Color.Gray),
                 "Temperature",
-                temperatureInput,
+                temperatureOutput,
                 "\u2103")
 
         Row(
@@ -76,7 +73,7 @@ fun MainComposer(){
                         .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(20.dp))
                         .background(Color.Gray),
                     "CO2",
-                    co2Input,
+                    co2Output,
                     "ppm")
                 EnvironmentElement(
                     modifier = Modifier
@@ -85,7 +82,7 @@ fun MainComposer(){
                         .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(100.dp))
                         .background(Color.Gray),
                     "UV Index",
-                    uvIndexInput,
+                    uvIndexOutput,
                     "")
 
             }
@@ -102,7 +99,7 @@ fun MainComposer(){
                         .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(100.dp))
                         .background(Color.Gray),
                     "Pressure",
-                    preasureInput,
+                    pressureOutput,
                     "hPa")
                 EnvironmentElement(
                     modifier = Modifier
@@ -111,8 +108,17 @@ fun MainComposer(){
                         .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(20.dp))
                         .background(Color.Gray),
                     "TVOH",
-                    organicCoumpoundInput,
+                    organicCompoundOutput,
                     "ppb")
+                EnvironmentElement(
+                    modifier = Modifier
+                        .size(150.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(20.dp))
+                        .background(Color.Gray),
+                    "Rain Intensity",
+                    rainIntensityOutput,
+                    "")
             }
         }
 
