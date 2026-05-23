@@ -13,28 +13,24 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-@Preview(name = "da")
-fun MainComposer(){
-    var temperatureOutput by remember {mutableStateOf(0)}
-    var pressureOutput by remember { mutableStateOf(0) }
-    var uvIndexOutput by remember { mutableStateOf(0) }
-    var co2Output by remember { mutableStateOf(0) }
-    var organicCompoundOutput by remember { mutableStateOf(0) }
-    var rainIntensityOutput by remember { mutableStateOf(0) }
+fun MainComposer(viewModel: MeteoViewModel){
+    val packet = viewModel.lastPacket
+
+    val temperatureOutput     = packet?.getTemperature()?.toInt() ?: 0
+    val pressureOutput        = packet?.getPressure()?.toInt()    ?: 0
+    val uvIndexOutput         = packet?.getUVIndex()?.toInt()     ?: 0
+    val co2Output             = packet?.getCO2()                  ?: 0
+    val organicCompoundOutput = packet?.getVolatileCompound()     ?: 0
+    val rainIntensityOutput   = packet?.getRainIntensity()        ?: 0
 
     Column(
         modifier = Modifier

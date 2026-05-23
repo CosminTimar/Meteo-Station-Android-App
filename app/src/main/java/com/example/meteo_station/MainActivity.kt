@@ -14,6 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.meteo_station.ui.theme.Meteo_StationTheme
 
 
@@ -37,17 +38,24 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        scanner = BleScanner(this)          // ← outside setContent
+        if (hasPermissions()) startScanning() else requestPermissions()
+
         setContent {
+            val meteoViewModel: MeteoViewModel = viewModel()
+            scanner.onPacketReceived = meteoViewModel::onPacketReceived  // safe here, runs once on first composition
+
             Meteo_StationTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    MainComposer()
+                    MainComposer(meteoViewModel)
                 }
             }
         }
-        //scanner = BleScanner(this)
-        //scanner.onPacketReceived = ::onPacketReceived
+        scanner = BleScanner(this)
+        scanner.onPacketReceived = ::onPacketReceived
 
-        //if (hasPermissions()) startScanning() else requestPermissions()
+        if (hasPermissions()) startScanning() else requestPermissions()
     }
 
     override fun onDestroy() {
