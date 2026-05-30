@@ -107,7 +107,7 @@ fun MainComposer(viewModel: MeteoViewModel){
                         .clip(RoundedCornerShape(20.dp))
                         .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(20.dp))
                         .background(Color.Gray),
-                    "TVOH",
+                    "TVOC",
                     organicCompoundOutput,
                     "ppb")
                 EnvironmentElement(
