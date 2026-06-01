@@ -27,6 +27,7 @@ fun MainComposer(viewModel: MeteoViewModel){
 
     val temperatureOutput     = packet?.getTemperature()?.toInt() ?: 0
     val pressureOutput        = packet?.getPressure()?.toInt()    ?: 0
+    val humidityOutput        = packet?.getHumidity()?.toInt()    ?: 0
     val uvIndexOutput         = packet?.getUVIndex()?.toInt()     ?: 0
     val co2Output             = packet?.getCO2()                  ?: 0
     val organicCompoundOutput = packet?.getVolatileCompound()     ?: 0
@@ -84,6 +85,15 @@ fun MainComposer(viewModel: MeteoViewModel){
                     "UV Index",
                     uvIndexOutput,
                     "")
+                EnvironmentElement(
+                    modifier = Modifier
+                        .size(150.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(20.dp))
+                        .background(Color.Gray),
+                    "Humidity",
+                    humidityOutput,
+                    "%")
 
             }
 

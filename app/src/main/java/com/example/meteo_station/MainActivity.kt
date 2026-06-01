@@ -3,11 +3,15 @@ package com.example.meteo_station
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
@@ -36,15 +40,14 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)  // ← always first
         enableEdgeToEdge()
 
-        scanner = BleScanner(this)          // ← outside setContent
-        if (hasPermissions()) startScanning() else requestPermissions()
+        scanner = BleScanner(this)          // ← initialize before any use
 
         setContent {
             val meteoViewModel: MeteoViewModel = viewModel()
-            scanner.onPacketReceived = meteoViewModel::onPacketReceived  // safe here, runs once on first composition
+            scanner.onPacketReceived = meteoViewModel::onPacketReceived
 
             Meteo_StationTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
@@ -52,10 +55,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        scanner = BleScanner(this)
-        scanner.onPacketReceived = ::onPacketReceived
 
-        if (hasPermissions()) startScanning() else requestPermissions()
+        if (hasPermissions()) checkBluetoothAndScan() else requestPermissions()
     }
 
     override fun onDestroy() {
@@ -79,6 +80,36 @@ class MainActivity : ComponentActivity() {
         packetHistory.addLast(packet)
 
         Log.d(TAG, "Packet #$packetCount — $packet")
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private val enableBluetoothLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            startScanning()
+        } else {
+            // User declined — show a message
+            Toast.makeText(this, "Bluetooth is required", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun checkBluetoothAndScan() {
+        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+
+        when {
+            bluetoothAdapter == null -> {
+                // Device doesn't support Bluetooth
+                Toast.makeText(this, "Bluetooth not supported", Toast.LENGTH_SHORT).show()
+            }
+            !bluetoothAdapter.isEnabled -> {
+                // Prompt user to enable Bluetooth
+                val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                enableBluetoothLauncher.launch(enableBtIntent)
+            }
+            else -> startScanning()
+        }
     }
 
     // ── Permissions ───────────────────────────────────────────────────────────
