@@ -25,14 +25,8 @@ import com.example.meteo_station.ui.theme.Meteo_StationTheme
 class MainActivity : ComponentActivity() {
     private lateinit var scanner: BleScanner
 
-    // ── Stored data ───────────────────────────────────────────────────────────
-    var lastPacket: BeaconPacket? = null
-    var packetCount: Int = 0
-    val packetHistory: ArrayDeque<BeaconPacket> = ArrayDeque(MAX_HISTORY)
-
     companion object {
         private const val TAG = "MainActivity"
-        private const val MAX_HISTORY = 100
         private const val PERMISSION_REQUEST_CODE = 1
     }
 
@@ -40,10 +34,10 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)  // ← always first
+        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        scanner = BleScanner(this)          // ← initialize before any use
+        scanner = BleScanner(this)
 
         setContent {
             val meteoViewModel: MeteoViewModel = viewModel()
@@ -70,16 +64,6 @@ class MainActivity : ComponentActivity() {
     private fun startScanning() {
         scanner.start()
         Log.i(TAG, "Scanning started")
-    }
-
-    private fun onPacketReceived(packet: BeaconPacket) {
-        lastPacket = packet
-        packetCount++
-
-        if (packetHistory.size >= MAX_HISTORY) packetHistory.removeFirst()
-        packetHistory.addLast(packet)
-
-        Log.d(TAG, "Packet #$packetCount — $packet")
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

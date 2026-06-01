@@ -6,7 +6,7 @@ import java.nio.ByteOrder
 data class BeaconPacket(
     val deviceAddress: String,
     val rssi: Int,
-    val envRaw: ByteArray?,  // payload from custom 0xA5 AD type (16 bytes)
+    val envRaw: ByteArray?,  // payload from custom 0xA5 AD type (18 bytes)
 ) {
     companion object {
         const val COMPANY_ID = 0x0059
